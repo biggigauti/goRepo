@@ -1,64 +1,58 @@
 package main
 
-import ( //Import packages
-	"fmt"
+import (
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
+	"math/rand"
 	"os"
-	"strings"
 )
 
+var facts = []string{ //Create array with random facts. array of type string.
+	"Until 1994, world maps and globes in Albania only had Albania on them.",
+	"February 1865 is the only month in recorded history not to have a full moon.",
+	"In the Philippine jungle, the yo-yo was first used as a weapon.",
+	"60 Minutes is the only TV show without a theme song.",
+	"Each king in a deck of playing cards represents a great king from history. Spades - King David, Clubs - Alexander the Great, Hearts - Charlemagne, and Diamonds - Julius Caesar.",
+}
+
 func main() {
-	m := make(map[string]int) //Create a new map (key:value data structure)
+	a := app.New()                           //creates app
+	w := a.NewWindow("GUI Test Application") //adds window to app
+	w.Resize(fyne.NewSize(2000, 2000))       //sets size of window. i set it as a large float since the window automatically scales if it is too large.
 
-	m["The Weeknd"] = 79600000 //Enter info into map
-	m["Justin Bieber"] = 77800000
-	m["Coldplay"] = 57300000
-	m["Eminem"] = 54900000
-	m["Michael Jackson"] = 28100000
-	m["Kanye West"] = 48800000
-	m["Drake"] = 53800000
+	hello := widget.NewLabel("Hello CS495. Label Test.") //creates label and displays it on the window
 
-	fmt.Println("Hello. Welcome to higher or lower (Spotify monthly listeners edition).") //fmt.Println() prints stuff to the console
-	fmt.Println("")
-	fmt.Println("You will be presented with two artists. You have to guess if the artist presented to you has more or less monthly listeners than the previously shown artist by selecting higher or lower.")
-	fmt.Println("")
-	fmt.Println("Let's get started.")
+	radioGroup := widget.NewRadioGroup([]string{"Yes", "No"}, func(string) {}) //Create radio group. Where the radiobuttons are held.
+	radioGroup.SetSelected("Yes")                                              //Sets default option selected.
+	radioLabel := widget.NewLabel("")                                          //Initialize label as blank
 
-	var flag = true //Set flag to true to keep the while loop going. I had issues when using flag = false to stop the loop so I resulted in os.Exit(3) instead.
+	factText := widget.NewLabel("")
 
-	for flag { //while loop
-		fmt.Println("The Weeknd has ", m["The Weeknd"], "monthly listeners. Does Justin Bieber have more or less? (enter h/l)")
-		var firstAnswer string //initialize answer string
-		fmt.Scanln(&firstAnswer) //gets user input
-		if strings.ToLower(firstAnswer) == "l" { //checks answers
-			fmt.Println("Correct. Justin Bieber has", m["Justin Bieber"], "monthly listener.")
-		} else {
-			fmt.Println("Wrong. Justin Bieber has", m["Justin Bieber"], "monthly listener. Cya!")
-			os.Exit(3)
-		}
+	w.SetContent(container.NewVBox( //Applying the things or concepts to your window. Anything in here will appear in order.
+		hello,
+		widget.NewButton("Click me", func() { //create a new button. apply the func() when it is pressed.
+			hello.SetText("You clicked the button so you changed the text in the hello label.") //this happens when the button is pressed.
+		}),
+		radioGroup, //apply the radiogroup to the window.
+		widget.NewButton("Submit", func() { //create another button with some logic.
+			if radioGroup.Selected == "Yes" {
+				radioLabel.SetText("You chose 'yes'")
+			} else {
+				radioLabel.SetText("You chose 'no'")
+			}
+		}),
+		radioLabel,
+		widget.NewSeparator(), //This is the line seen on the window. A simple separator.
+		widget.NewButton("Get Fact", func() {
+			factText.SetText(facts[rand.Intn(3)]) //Randomizes a fact each time the button is pressed.
+		}),
+		factText,
+		widget.NewButton("Exit", func() {
+			os.Exit(3) //exit condition.
+		}),
+	))
 
-		//The rest of the code is repitition from previous comments.
-		
-		fmt.Println("Justin Bieber has ", m["Justin Bieber"], "monthly listeners. Does Michael Jackson have more or less? (enter h/l)")
-		var secondAnswer string
-		fmt.Scanln(&secondAnswer)
-		if strings.ToLower(secondAnswer) == "l" {
-			fmt.Println("Correct. Michael Jackson has", m["Michael Jackson"], "monthly listener.")
-		} else {
-			fmt.Println("Wrong. Michael Jackson has", m["Michael Jackson"], "monthly listener. Cya!")
-			os.Exit(3)
-		}
-
-		fmt.Println("Michael Jackson has ", m["Michael Jackson"], "monthly listeners. Does Eminem have more or less? (enter h/l)")
-		var thirdAnswer string
-		fmt.Scanln(&thirdAnswer)
-		if strings.ToLower(thirdAnswer) == "l" {
-			fmt.Println("Wrong. Eminem has", m["Eminem"], "monthly listener. Cya!")
-			os.Exit(3)
-		} else {
-			fmt.Println("Correct. Eminem has", m["Eminem"], "monthly listener.")
-		}
-
-		fmt.Println("Game over. Purchase the full version for $89.99 by contacting Birgir Gauti Stefánsson.")
-		os.Exit(3)
-	}
+	w.ShowAndRun() //runs application
 }
